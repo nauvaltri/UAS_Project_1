@@ -56,8 +56,12 @@ class ProfileFragment : Fragment() {
 //        binding.emailProfile.setText(auth.currentUser!!.email)
         binding.nameProfile.setText(sharePreferences.getString("username","username"))
 
+
+
         binding.logout.setOnClickListener{
             sharePreferences.edit().putBoolean("isLoggedIn",false).apply ()
+
+
             startActivity(Intent(requireActivity(),OpeningActivity::class.java))
             Firebase.auth.signOut()
         }

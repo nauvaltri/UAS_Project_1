@@ -49,8 +49,9 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/greyhound" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/fotoprofile"
+                />
         </androidx.cardview.widget.CardView>
 
 

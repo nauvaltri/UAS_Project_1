@@ -10,6 +10,7 @@ import com.example.uas_project_1.databinding.ActivityLoginRegisterBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
+
 class LoginRegister : AppCompatActivity() {
     private lateinit var binding: ActivityLoginRegisterBinding
     private lateinit var tabLayout : TabLayout

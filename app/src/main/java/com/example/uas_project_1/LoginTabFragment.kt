@@ -51,56 +51,96 @@ class LoginTabFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding= FragmentLoginTabBinding.inflate(layoutInflater,container,false)
-        auth=Firebase.auth
-        firebase= FirebaseFirestore.getInstance()
+        binding = FragmentLoginTabBinding.inflate(layoutInflater, container, false)
+        auth = Firebase.auth
+        firebase = FirebaseFirestore.getInstance()
 
         val email: EditText = binding.loginEmail
         val password: EditText = binding.loginPassword
-        val loginBtn : Button = binding.btnLogin
+        val loginBtn: Button = binding.btnLogin
 
         // Check if user credentials are saved in SharedPreferences
-        val sharedPreferences = requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE)
+        val isLoggendIn = sharedPreferences.getBoolean("isLoggedIn", false)
 //        val savedEmail = sharedPreferences.getString("email", null)
 //        val savedPassword = sharedPreferences.getString("password", null)
         val editor = sharedPreferences.edit()
 
-        loginBtn.setOnClickListener {
-            if (email.text.toString().isEmpty()) {
-                Toast.makeText(requireActivity(), "Please Fill the Email!", Toast.LENGTH_SHORT).show()
-            }
-            if (password.text.toString().isEmpty()) {
-                Toast.makeText(requireActivity(), "Please Fill the Email!", Toast.LENGTH_SHORT).show()
-            }
+        if (isLoggendIn) {
+            val userType = sharedPreferences.getString("userType", "guest")
+            navigateToMainMenu(userType)
+        } else {
 
-            auth.signInWithEmailAndPassword(email.text.toString(), password.text.toString())
-                .addOnCompleteListener(requireActivity()) { taskk ->
-                    val currentUser = auth.currentUser
-                    if (taskk.isSuccessful) {
-                        if (currentUser != null) {
-                            // Save user credentials in SharedPreferences
-                            // Check if the user is an admin based on their email address
-                            if (currentUser.email == "admin@gmail.com") {
-                                // User is an admin, redirect to Admin activity
-                                editor.putBoolean("isAdminLoggedIn", true)
-                                editor.putString("email", email.text.toString())
-                                editor.putString("password", password.text.toString())
-                                editor.apply()
-                                startActivity(Intent(requireActivity(), AdminHomeMainActivity::class.java))
-                            } else {
-                                // User is not an admin, redirect to User activity
-                                editor.putBoolean("isUserLoggedIn", true)
-                                editor.putString("email", email.text.toString())
-                                editor.putString("password", password.text.toString())
-                                editor.apply()
-                                startActivity(Intent(requireActivity(), MainActivity::class.java))
-                            }
-                        }
-                    } else {
-                        Toast.makeText(requireActivity(), "Login Gagal", Toast.LENGTH_SHORT).show()
-                    }
+
+            loginBtn.setOnClickListener {
+                if (email.text.toString().isEmpty()) {
+                    Toast.makeText(requireActivity(), "Please Fill the Email!", Toast.LENGTH_SHORT)
+                        .show()
                 }
+                if (password.text.toString().isEmpty()) {
+                    Toast.makeText(requireActivity(), "Please Fill the Email!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                auth.signInWithEmailAndPassword(email.text.toString(), password.text.toString())
+                    .addOnCompleteListener(requireActivity()) { taskk ->
+                        val currentUser = auth.currentUser
+                        if (taskk.isSuccessful) {
+                            if (currentUser != null) {
+                                // Save user credentials in SharedPreferences
+                                // Check if the user is an admin based on their email address
+                                val userType = if (currentUser.email == "admin@gmail.com") {
+                                    "admin"
+                                }
+                                else{
+                                    "user"}
+                                    editor.putBoolean("isLoggedIn", true)
+                                    editor.putString("userType", userType)
+                                    editor.apply()
+
+                                    navigateToMainMenu(userType)
+
+                                    // User is an admin, redirect to Admin activity
+//                                    editor.putBoolean("isAdminLoggedIn", true)
+//                                    editor.putString("email", email.text.toString())
+//                                    editor.putString("password", password.text.toString())
+//                                    editor.apply()
+//                                    startActivity(
+//                                        Intent(
+//                                            requireActivity(),
+//                                            AdminHomeMainActivity::class.java
+//                                        )
+//                                    )
+                                }
+                        } else {
+
+                            Toast.makeText(requireActivity(),"Login Failed",Toast.LENGTH_SHORT).show()
+//                                    // User is not an admin, redirect to User activity
+//                                    editor.putBoolean("isUserLoggedIn", true)
+//                                    editor.putString("email", email.text.toString())
+//                                    editor.putString("password", password.text.toString())
+//                                    editor.apply()
+//                                    startActivity(
+//                                        Intent(
+//                                            requireActivity(),
+//                                            MainActivity::class.java
+//                                        )
+//                                    )
+                                }
+                    }
+            }
         }
+
         return binding.root
+    }
+
+    private fun navigateToMainMenu(userType:String?){
+        val intentTo =when (userType){
+            "user" -> Intent (requireActivity(),MainActivity::class.java)
+            "admin" -> Intent(requireActivity(),AdminHomeMainActivity::class.java)
+            else -> null
+        }
+        startActivity(intentTo!!)
     }
 }
