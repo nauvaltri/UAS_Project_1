@@ -27,12 +27,14 @@
         private lateinit var storageReference: StorageReference
         private lateinit var imageUri: Uri
 
+
+        // Pengelola hasil untuk mendapatkan konten (pilih gambar)
         private val getContent =
             registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
                 if (uri != null) {
                     imageUri = uri
                     binding.imageViewAdd.setImageURI(uri)
-                    // Optionally, you can call uploadData(imageUri) here if needed
+                    /// Opsional, Anda dapat memanggil uploadData(imageUri) di sini jika diperlukan
                 }
             }
 
@@ -43,14 +45,19 @@
             binding = ActivityAdminListAddMainBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
+            // Menetapkan OnClickListener untuk tombol tambah
             with(binding) {
                 adminListAddButton.setOnClickListener {
                     uploadData(imageUri)
                 }
+
+                // Menetapkan OnClickListener untuk ImageView (pilih gambar)
                 adminListAddImage.setOnClickListener {
                     getContent.launch("image/*")
                 }
             }
+
+            // Logout pengguna saat ini (opsional, sesuai dengan kebutuhan aplikasi)
             Firebase.auth.signOut()
             binding.addBack.setOnClickListener{
                 startActivity(Intent(this@AdminListAddMainActivity,AdminHomeMainActivity::class.java))
@@ -58,6 +65,8 @@
         }
 
         //Function
+
+        // Fungsi untuk mengunggah data ke Firebase
         private fun uploadData(imageUri: Uri? = null) {
             val title: String = binding.adminListAddTitle.text.toString()
             val author: String = binding.adminListAddAuthor.text.toString()
@@ -65,6 +74,8 @@
 
             val imageId = UUID.randomUUID().toString()
 
+
+            // Memeriksa apakah semua field diisi dan gambar dipilih
             if (title.isNotEmpty() && author.isNotEmpty() && description.isNotEmpty() && imageUri != null) {
                 // Generate a unique ID for the image
 
@@ -83,16 +94,20 @@
                                 binding.adminListAddAuthor.text!!.clear()
                                 binding.adminListAddDescription.text!!.clear()
 
-    //                            showNotification("Data Uploaded Successfully")
+    //                            // Menampilkan notifikasi
 
                                 startActivity(Intent(this,AdminHomeMainActivity::class.java))
                                 Toast.makeText(this, "Uplod data selesai ", Toast.LENGTH_SHORT).show()
                             }
                             .addOnFailureListener {
+
+                                // Menampilkan pesan kegagalan jika ada
                                 Toast.makeText(this, "Gagal menambahkan data", Toast.LENGTH_SHORT).show()
                             }
                     }
                 }.addOnFailureListener {
+
+                    // Menampilkan pesan kegagalan pengunggahan gambar
                     Toast.makeText(this, "Image Upload Failed!", Toast.LENGTH_SHORT).show()
                 }
             } else {

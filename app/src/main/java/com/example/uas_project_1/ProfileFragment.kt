@@ -59,9 +59,7 @@ class ProfileFragment : Fragment() {
 
 
         binding.logout.setOnClickListener{
-            sharePreferences.edit().putBoolean("isLoggedIn",false).apply ()
-
-
+            sharePreferences.edit().putBoolean("isLoggedIn",false).apply()
             startActivity(Intent(requireActivity(),OpeningActivity::class.java))
             Firebase.auth.signOut()
         }

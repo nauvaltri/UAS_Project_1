@@ -48,6 +48,7 @@ class Home2Fragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -73,10 +74,10 @@ class Home2Fragment : Fragment() {
         // Initialize Room database
         dao = NoteRoomDatabase.getDatabase(requireContext()).dao()
 
-        // Initialize Firebase reference
+        // Inisialisasi referensi Firebase
         database = FirebaseDatabase.getInstance().getReference("Admin")
 
-        // Fetch data from Firebase and update itemList
+        // Ambil data dari Firebase dan perbarui itemList
         fetchFilmFromFirebase()
 
 
@@ -85,6 +86,8 @@ class Home2Fragment : Fragment() {
 
 
     private fun fetchFilmFromFirebase() {
+
+        // ValueEventListener untuk mengambil data dari Firebase
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val filmList = mutableListOf<Note>()
@@ -95,7 +98,7 @@ class Home2Fragment : Fragment() {
                     filmEntity?.let { filmList.add(it) }
                 }
 
-                // Update Room database with the new data from Firebase
+                // Perbarui Room database dengan data baru dari Firebase
                 GlobalScope.launch(Dispatchers.IO) {
                     dao.deleteAllFilm()
                     dao.insertFilm(filmList)
@@ -103,11 +106,11 @@ class Home2Fragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle the error if needed
+                // Tangani kesalahan jika diperlukan
             }
         })
 
-        // Observe changes in the LiveData from Room and update the adapter
+        // Amati perubahan di LiveData dari Room dan perbarui adapter
         dao.getAllFilm().observe(viewLifecycleOwner, Observer { films ->
             itemAdapter.updateData(films)
         })

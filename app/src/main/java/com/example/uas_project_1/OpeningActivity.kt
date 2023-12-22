@@ -22,12 +22,14 @@ class OpeningActivity : AppCompatActivity() {
         binding=ActivityOpeningBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+// Mendapatkan SharedPreferences untuk mengecek status login admin dan user
         val sharedPref = getSharedPreferences("myPrefs", Context.MODE_PRIVATE)
         val isAdminLoggedIn = sharedPref.getBoolean("isAdminLoggedIn", false)
         val isUserLoggedIn = sharedPref.getBoolean("isUserLoggedIn", false)
 
 
         with(binding) {
+            // Animasi fading pada logo selama 2 detik
             openingLogo.alpha = 0f
             openingLogo.animate().setDuration(2000).alpha(1f).withEndAction() {
                 val targetActivity = if (isAdminLoggedIn) {
@@ -37,8 +39,10 @@ class OpeningActivity : AppCompatActivity() {
                 } else {
                     LoginRegister::class.java
                 }
+                // Buat intent dan arahkan ke aktivitas tujuan
                 val intent = Intent(this@OpeningActivity, targetActivity)
                 startActivity(intent)
+                // Tutup aktivitas OpeningActivity agar tidak kembali saat tombol "back" ditekan
                 finish()
             }
         }

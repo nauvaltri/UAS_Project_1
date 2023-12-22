@@ -51,20 +51,28 @@ class SignupTabFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        // Inflate layout untuk fragment ini
         binding= FragmentSignupTabBinding.inflate(layoutInflater,container,false)
         auth= Firebase.auth
 
+
+        // Mengambil referensi ke SharedPreferences
         sharePreferences = requireActivity().getSharedPreferences("user_data", Context.MODE_PRIVATE)
         val editor = sharePreferences.edit()
 
+        // Mendapatkan referensi ke elemen-elemen antarmuka pengguna
         val username: EditText = binding.signupUsername
         val email:EditText = binding.signupEmail
         val password: EditText = binding.signupPassword
         val registerNow: Button = binding.btnRegister
 
+
+
+        // Menangani klik pada tombol register
         registerNow.setOnClickListener {
 
+
+            // Mengecek apakah kolom email dan password tidak kosong
             if (email.text.toString().isEmpty()){
                 Toast.makeText(requireActivity(),"PLEASE FILL THE EMAIl",Toast.LENGTH_SHORT).show()
             }
@@ -72,19 +80,28 @@ class SignupTabFragment : Fragment() {
                 Toast.makeText(requireActivity(),"PLEASE FILL THE PASSWORD",Toast.LENGTH_SHORT).show()
             }
 
+
+            // Membuat pengguna baru dengan Firebase Authentication
             auth.createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
                 .addOnCompleteListener(requireActivity()) {task ->
                     if(task.isSuccessful){
+
+                        // Menyimpan informasi pengguna di SharedPreferences
                         editor.putString("username",username.text.toString())
                         editor.putString("email",email.text.toString())
                         editor.putString("password",password.text.toString())
                         editor.apply()
 
+                        // Mengosongkan kolom input setelah registrasi berhasil
                         email.text?.clear()
                         password.text?.clear()
                         username.text?.clear()
+
+                        // Menampilkan pesan sukses registrasi
                         Toast.makeText(requireActivity(),"Register Successfull!",Toast.LENGTH_SHORT).show()
                     } else {
+
+                        // Menampilkan pesan gagal jika registrasi tidak berhasil
                         Toast.makeText(requireActivity(),"Register Failed",Toast.LENGTH_SHORT).show()
                     }
                 }

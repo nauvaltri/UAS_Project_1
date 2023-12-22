@@ -3,6 +3,7 @@ package com.example.uas_project_1
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -28,26 +29,26 @@ class AdminHomeMainActivity : AppCompatActivity() {
     private lateinit var itemList : ArrayList<ItemData>
     private lateinit var recyclerViewItem : RecyclerView
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     private lateinit var auth: FirebaseAuth
 
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkReceiver: BroadcastReceiver
 
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminHomeMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        sharedPreferences = this.getSharedPreferences("user_data",Context.MODE_PRIVATE)
+
 
         auth = Firebase.auth
-        binding.logout.setOnClickListener{
-            val sharedPreferences = this.getSharedPreferences("user_data",Context.MODE_PRIVATE)
-            sharedPreferences.edit().putBoolean("IsLoggedIn",false).apply()
 
-            auth.signOut()
+        binding.logout.setOnClickListener{
+            sharedPreferences.edit().putBoolean("isLoggedIn",false).apply()
             startActivity(Intent(this@AdminHomeMainActivity,OpeningActivity::class.java))
+            auth.signOut()
         }
 
         recyclerViewItem = binding.recyclerPiw
@@ -82,16 +83,14 @@ class AdminHomeMainActivity : AppCompatActivity() {
                 Toast.makeText(this@AdminHomeMainActivity, "Data retrieval failed!", Toast.LENGTH_SHORT).show()
             }
         })
-        Firebase.auth.signOut()
-        binding.logout.setOnClickListener{
-            startActivity(Intent(this@AdminHomeMainActivity,OpeningActivity::class.java))
-        }
+
         with(binding) {
             fabAdd.setOnClickListener {
                 val intent = Intent(this@AdminHomeMainActivity, AdminListAddMainActivity::class.java)
                 startActivity(intent)
             }
         }
+
 
 
     }
